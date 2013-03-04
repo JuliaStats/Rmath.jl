@@ -1,3 +1,4 @@
+require("test")
 using Rmath
 
 srand(124)

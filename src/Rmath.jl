@@ -10,6 +10,7 @@ module Rmath
     export dchisq,pchisq,qchisq,rchisq # Central Chi-squared distribution (df)
     export dexp,pexp,qexp,rexp         # Exponential distribution (rate)
     export df,pf,qf,rf                 # Central F distribution (df1,df2)
+    export dgamma,pgamma,qgamma,rgamma # Gamma distribution (shape, scale)
     export dgeom,pgeom,qgeom,rgeom     # Geometric distribution (prob)
     export dhyper,phyper,qhyper,rhyper # Hypergeometric (m, n, k)
     export dlnorm,plnorm,qlnorm,rlnorm # Log-normal distribution (meanlog, sdlog)
@@ -24,6 +25,7 @@ module Rmath
     export dsignrank,psignrank,qsignrank,rsignrank
     export dt,pt,qt,rt                 # Student's t distribution (df)
     export dunif,punif,qunif,runif     # Uniform distribution (min, max)
+    export dweibull,pweibull,qweibull,rweibull # Weibull distribution (shape, scale)
     export dwilcox,pwilcox,qwilcox,rwilcox # Wilcox's Rank Sum statistic (m, n)
     export ptukey, qtukey              # Studentized Range Distribution - p and q only
 
