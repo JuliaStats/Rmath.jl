@@ -4,8 +4,6 @@
 
 module Rmath
 
-    using Base.libRmath
-
     export dbeta,pbeta,qbeta,rbeta     # Beta distribution (shape1, shape2)
     export dbinom,pbinom,qbinom,rbinom # Binomial distribution (size, prob)
     export dcauchy,pcauchy,qcauchy,rcauchy # Cauchy distribution (location, scale)
@@ -84,7 +82,7 @@ module Rmath
                                                                a2::AbstractArray{T2},
                                                                a3::T3,
                                                                a4::T4) =
-                reshape([$f(a1, a2[i], a3, a4) for i=1:length(a2], size(a2))
+                reshape([$f(a1, a2[i], a3, a4) for i=1:length(a2)], size(a2))
             $f{T1<:Number, T2<:Number, T3<:Number, T4<:Number}(a1::T1,
                                                                a2::T2,
                                                                a3::AbstractArray{T3},
