@@ -4,6 +4,15 @@
 
 module Rmath
 
+# use dirname(@__FILE__) instead of Pkg.dir, since the latter will
+# cause the package to not work if installed in some other location
+depsjl = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
+if isfile(depsjl)
+    include(depsjl)
+else
+    error("Rmath not properly installed. Please run Pkg.build(\"Rmath\") and restart julia")
+end
+
     export dbeta,pbeta,qbeta,rbeta     # Beta distribution (shape1, shape2)
     export dbinom,pbinom,qbinom,rbinom # Binomial distribution (size, prob)
     export dcauchy,pcauchy,qcauchy,rcauchy # Cauchy distribution (location, scale)
@@ -184,7 +193,7 @@ module Rmath
                 global $func
                 function $libcall(x::Vector{Union{}})
                     gc_tracking_obj = []
-                    ccall(($(string(libcall)),:libRmath), Void, ())
+                    ccall(($(string(libcall)),libRmath), Void, ())
                 end
                 function $func()
                     if !isa(gc_tracking_obj, Bool)
@@ -231,16 +240,16 @@ module Rmath
         quote
             global $dd, $pp, $qq, $rr
             $dd(x::Number, p1::Number, give_log::Bool) = 
-                ccall(($(string(dd)),:libRmath), Float64,
+                ccall(($(string(dd)),libRmath), Float64,
                       (Float64,Float64,Int32), x, p1, give_log)
             $pp(q::Number, p1::Number, lower_tail::Bool, log_p::Bool) =
-                ccall(($(string(pp)),:libRmath), Float64,
+                ccall(($(string(pp)),libRmath), Float64,
                       (Float64,Float64,Int32,Int32), q, p1, lower_tail, log_p)
             $qq(p::Number, p1::Number, lower_tail::Bool, log_p::Bool) =
-                ccall(($(string(qq)),:libRmath), Float64,
+                ccall(($(string(qq)),libRmath), Float64,
                       (Float64,Float64,Int32,Int32), p, p1, lower_tail, log_p)
             $rr(nn::Integer, p1::Number) =
-                [ccall(($(string(rr)),:libRmath), Float64, (Float64,), p1) for i=1:nn]
+                [ccall(($(string(rr)),libRmath), Float64, (Float64,), p1) for i=1:nn]
             @libRmath_1par_0d_aliases $base
         end
     end
@@ -255,19 +264,19 @@ module Rmath
     @libRmath_deferred_free signrank
     function dsignrank(x::Number, p1::Number, give_log::Bool)
         signrank_deferred_free()
-        ccall((:dsignrank,:libRmath), Float64, (Float64,Float64,Int32), x, p1, give_log)
+        ccall((:dsignrank,libRmath), Float64, (Float64,Float64,Int32), x, p1, give_log)
     end
     function psignrank(q::Number, p1::Number, lower_tail::Bool, log_p::Bool)
         signrank_deferred_free()
-        ccall((:psignrank,:libRmath), Float64, (Float64,Float64,Int32,Int32), q, p1, lower_tail, log_p)
+        ccall((:psignrank,libRmath), Float64, (Float64,Float64,Int32,Int32), q, p1, lower_tail, log_p)
     end
     function qsignrank(p::Number, p1::Number, lower_tail::Bool, log_p::Bool)
         signrank_deferred_free()
-        ccall((:qsignrank,:libRmath), Float64, (Float64,Float64,Int32,Int32), p, p1, lower_tail, log_p)
+        ccall((:qsignrank,libRmath), Float64, (Float64,Float64,Int32,Int32), p, p1, lower_tail, log_p)
     end
     @libRmath_1par_0d_aliases signrank
     rsignrank(nn::Integer, p1::Number) =
-        [ccall((:rsignrank,:libRmath), Float64, (Float64,), p1) for i=1:nn]
+        [ccall((:rsignrank,libRmath), Float64, (Float64,), p1) for i=1:nn]
 
     ## Distributions with 1 parameter and a default
     macro libRmath_1par_1d(base, d1)
@@ -278,7 +287,7 @@ module Rmath
         quote
             global $dd, $pp, $qq, $rr
             $dd(x::Number, p1::Number, give_log::Bool) = 
-                ccall(($(string(dd)),:libRmath), Float64, (Float64,Float64,Int32), x, p1, give_log)
+                ccall(($(string(dd)),libRmath), Float64, (Float64,Float64,Int32), x, p1, give_log)
             $dd{T<:Number}(x::AbstractArray{T}, p1::Number, give_log::Bool) =
                 reshape([$dd(x[i], p1, give_log) for i=1:length(x)], size(x))
         $dd(x::Number, give_log::Bool) = $dd(x, $d1, give_log)
@@ -289,7 +298,7 @@ module Rmath
         $dd{T<:Number}(x::AbstractArray{T}) = $dd(x, $d1, false)
 
         $pp(q::Number, p1::Number, lower_tail::Bool, log_p::Bool) =
-            ccall(($(string(pp)),:libRmath), Float64, (Float64,Float64,Int32,Int32), q, p1, lower_tail, log_p)
+            ccall(($(string(pp)),libRmath), Float64, (Float64,Float64,Int32,Int32), q, p1, lower_tail, log_p)
         $pp{T<:Number}(q::AbstractArray{T}, p1::Number, lower_tail::Bool, log_p::Bool) =
             reshape([$pp(q[i], p1, lower_tail, log_p) for i=1:length(q)], size(q))
         $pp(q::Number, lower_tail::Bool, log_p::Bool) = $pp(q, $d1, lower_tail, log_p)
@@ -304,7 +313,7 @@ module Rmath
         $pp{T<:Number}(q::AbstractArray{T}) = $pp(q, $d1, true, false)
 
         $qq(p::Number, p1::Number, lower_tail::Bool, log_p::Bool) =
-            ccall(($(string(qq)),:libRmath), Float64, (Float64,Float64,Int32,Int32), p, p1, lower_tail, log_p)
+            ccall(($(string(qq)),libRmath), Float64, (Float64,Float64,Int32,Int32), p, p1, lower_tail, log_p)
         $qq{T<:Number}(p::AbstractArray{T}, p1::Number, lower_tail::Bool, log_p::Bool) =
             reshape([$qq(p[i], p1, lower_tail, log_p) for i=1:length(p)], size(p))
         $qq(p::Number, lower_tail::Bool, log_p::Bool) = $qq(p, $d1, lower_tail, log_p)
@@ -319,7 +328,7 @@ module Rmath
         $qq{T<:Number}(p::AbstractArray{T}) = $qq(p, $d1, true, false)
 
         $rr(nn::Integer, p1::Number) =
-            [ccall(($(string(rr)),:libRmath), Float64, (Float64,), p1) for i=1:nn]
+            [ccall(($(string(rr)),libRmath), Float64, (Float64,), p1) for i=1:nn]
         $rr(nn::Integer) = $rr(nn, $d1)
     end
 end
@@ -366,13 +375,13 @@ macro libRmath_2par_0d(base)
     quote
         global $dd, $pp, $qq, $rr
         $dd(x::Number, p1::Number, p2::Number, give_log::Bool) =
-            ccall(($(string(dd)),:libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
+            ccall(($(string(dd)),libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
         $pp(q::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
-            ccall(($(string(pp)),:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), q, p1, p2, lower_tail, log_p)
+            ccall(($(string(pp)),libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), q, p1, p2, lower_tail, log_p)
         $qq(p::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
-            ccall(($(string(qq)),:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
+            ccall(($(string(qq)),libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
         $rr(nn::Integer, p1::Number, p2::Number) =
-            [ccall(($(string(rr)),:libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
+            [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
         @libRmath_2par_0d_aliases $base
     end
 end
@@ -389,18 +398,18 @@ end
 @libRmath_deferred_free wilcox
 function dwilcox(x::Number, p1::Number, p2::Number, give_log::Bool)
     wilcox_deferred_free()
-    ccall((:dwilcox,:libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
+    ccall((:dwilcox,libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
 end
 function pwilcox(q::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool)
     wilcox_deferred_free()
-    ccall((:pwilcox,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), q, p1, p2, lower_tail, log_p)
+    ccall((:pwilcox,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), q, p1, p2, lower_tail, log_p)
 end
 function qwilcox(p::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool)
     wilcox_deferred_free()
-    ccall((:qwilcox,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
+    ccall((:qwilcox,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
 end
 rwilcox(nn::Integer, p1::Number, p2::Number) =
-    [ccall((:rwilcox,:libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
+    [ccall((:rwilcox,libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
 @libRmath_2par_0d_aliases wilcox
 
 ## Distributions with 2 parameters and 1 default
@@ -412,7 +421,7 @@ macro libRmath_2par_1d(base, d2)
     quote
         global $dd, $pp, $qq, $rr
         $dd(x::Number, p1::Number, p2::Number, give_log::Bool) =
-            ccall(($(string(dd)),:libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
+            ccall(($(string(dd)),libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
         $dd{T<:Number}(x::AbstractArray{T}, p1::Number, p2::Number, give_log::Bool) =
             reshape([$dd(x[i], p1, p2, give_log) for i=1:length(x)], size(x))
         $dd(x::Number, p1::Number, give_log::Bool) = $dd(x, p1, $d2, give_log)
@@ -423,7 +432,7 @@ macro libRmath_2par_1d(base, d2)
         @vectorize_2arg Number $dd
         
         $pp(q::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
-            ccall(($(string(pp)),:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), q, p1, p2, lower_tail, log_p)
+            ccall(($(string(pp)),libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), q, p1, p2, lower_tail, log_p)
         $pp(q::Number, p1::Number, lower_tail::Bool, log_p::Bool) = $pp(q, p1, $d2, lower_tail, log_p)
         $pp{T<:Number}(q::AbstractArray{T}, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
             reshape([$pp(q[i], p1, p2, lower_tail, log_p) for i=1:length(q)], size(q))
@@ -438,7 +447,7 @@ macro libRmath_2par_1d(base, d2)
         @vectorize_2arg Number $pp
         
         $qq(p::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
-            ccall(($(string(qq)),:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
+            ccall(($(string(qq)),libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
         $qq(p::Number, p1::Number, lower_tail::Bool, log_p::Bool) = $qq(p, p1, $d2, lower_tail, log_p)
         $qq{T<:Number}(p::AbstractArray{T}, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
             reshape([$qq(p[i], p1, p2, lower_tail, log_p) for i=1:length(p)], size(p))
@@ -453,7 +462,7 @@ macro libRmath_2par_1d(base, d2)
         @vectorize_2arg Number $qq
 
         $rr(nn::Integer, p1::Number, p2::Number) =
-            [ccall(($(string(rr)),:libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
+            [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
         $rr(nn::Integer, p1::Number) = $rr(nn, p1, $d2)
     end
 end
@@ -475,7 +484,7 @@ macro libRmath_2par_2d(base, d1, d2)
     quote
         global $dd, $pp, $qq, $rr
         $dd(x::Number, p1::Number, p2::Number, give_log::Bool) =
-            ccall(($(string(ddsym)),:libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
+            ccall(($(string(ddsym)),libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
         $dd{T<:Number}(x::AbstractArray{T}, p1::Number, p2::Number, give_log::Bool) =
             reshape([$dd(x[i], p1, p2, give_log) for i=1:length(x)], size(x))
         $dd(x::Number, p1::Number, give_log::Bool) = $dd(x, p1, $d2, give_log)
@@ -491,7 +500,7 @@ macro libRmath_2par_2d(base, d1, d2)
 
         
         $pp(q::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
-            ccall(($(string(ppsym)),:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), q, p1, p2, lower_tail, log_p)
+            ccall(($(string(ppsym)),libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), q, p1, p2, lower_tail, log_p)
         $pp{T<:Number}(q::AbstractArray{T}, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
             reshape([$pp(q[i], p1, p2, lower_tail, log_p) for i=1:length(q)], size(q))
         $pp(q::Number, p1::Number, lower_tail::Bool, log_p::Bool) = $pp(q, p1, $d2, lower_tail, log_p)
@@ -512,7 +521,7 @@ macro libRmath_2par_2d(base, d1, d2)
         $pp{T<:Number}(q::AbstractArray{T}) = $pp(q, $d1, $d2, true, false)
         
         $qq(p::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
-            ccall(($(string(qqsym)),:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
+            ccall(($(string(qqsym)),libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
         $qq{T<:Number}(p::AbstractArray{T}, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
             reshape([$qq(p[i], p1, p2, lower_tail, log_p) for i=1:length(p)], size(p))
         $qq(p::Number, p1::Number, lower_tail::Bool, log_p::Bool) = $qq(p, p1, $d2, lower_tail, log_p)
@@ -533,7 +542,7 @@ macro libRmath_2par_2d(base, d1, d2)
         $qq{T<:Number}(p::AbstractArray{T}) = $qq(p, $d1, $d2, true, false)
 
         $rr(nn::Integer, p1::Number, p2::Number) =
-            [ccall(($(string(rr)),:libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
+            [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
         $rr(nn::Integer, p1::Number) = $rr(nn, p1, $d2)
         $rr(nn::Integer) = $rr(nn, $d1, $d2)
     end
@@ -554,14 +563,14 @@ macro libRmath_3par_0d(base)
     quote
         global $dd, $pp, $qq, $rr
         $dd(x::Number, p1::Number, p2::Number, p3::Number, give_log::Bool) =
-            ccall(($(string(dd)),:libRmath), Float64, (Float64,Float64,Float64,Float64,Int32), x, p1, p2, p3, give_log)
+            ccall(($(string(dd)),libRmath), Float64, (Float64,Float64,Float64,Float64,Int32), x, p1, p2, p3, give_log)
         $dd{T<:Number}(x::AbstractArray{T}, p1::Number, p2::Number, p3::Number, give_log::Bool) =
             reshape([$dd(x[i], p1, p2, p3, give_log) for i=1:length(x)], size(x))
         $dd(x::Number, p1::Number, p2::Number, p3::Number) = $dd(x, p1, p2, p3, false)
         @libRmath_vectorize_4arg $dd
 
         $pp(q::Number, p1::Number, p2::Number, p3::Number, lower_tail::Bool, log_p::Bool) =
-            ccall(($(string(pp)),:libRmath), Float64, (Float64,Float64,Float64,Float64,Int32,Int32), q, p1, p2, p3, lower_tail, log_p)
+            ccall(($(string(pp)),libRmath), Float64, (Float64,Float64,Float64,Float64,Int32,Int32), q, p1, p2, p3, lower_tail, log_p)
         $pp{T<:Number}(q::AbstractArray{T}, p1::Number, p2::Number, p3::Number, lower_tail::Bool, log_p::Bool) =
             reshape([$pp(q[i], p1, p2, p3, lower_tail, log_p) for i=1:length(q)], size(q))
         $pp(q::Number, p1::Number, p2::Number, p3::Number, lower_tail::Bool) = $pp(q, p1, p2, p3, lower_tail, false)
@@ -571,7 +580,7 @@ macro libRmath_3par_0d(base)
         @libRmath_vectorize_4arg $pp
 
         $qq(p::Number, p1::Number, p2::Number, p3::Number, lower_tail::Bool, log_p::Bool) =
-            ccall(($(string(qq)),:libRmath), Float64, (Float64,Float64,Float64,Float64,Int32,Int32), p, p1, p2, p3, lower_tail, log_p)
+            ccall(($(string(qq)),libRmath), Float64, (Float64,Float64,Float64,Float64,Int32,Int32), p, p1, p2, p3, lower_tail, log_p)
         $qq{T<:Number}(p::AbstractArray{T}, p1::Number, p2::Number, p3::Number, lower_tail::Bool, log_p::Bool) =
             reshape([$qq(p[i], p1, p2, p3, lower_tail, log_p) for i=1:length(p)], size(p))
         $qq(p::Number, p1::Number, p2::Number, p3::Number, lower_tail::Bool) = $qq(p, p1, p2, p3, lower_tail, false)
@@ -581,7 +590,7 @@ macro libRmath_3par_0d(base)
         @libRmath_vectorize_4arg $qq
 
         $rr(nn::Integer, p1::Number, p2::Number, p3::Number) =
-            [ccall(($(string(rr)),:libRmath), Float64, (Float64,Float64,Float64), p1, p2, p3) for i=1:nn]
+            [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64,Float64), p1, p2, p3) for i=1:nn]
     end
 end
 
@@ -591,11 +600,11 @@ end
 
 ## tukey (Studentized Range Distribution - p and q only - 3pars)
 ptukey(q::Number, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool) =
-    ccall((:ptukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,log_p)
+    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,log_p)
 ptukey(q::Number, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool) =
-    ccall((:ptukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,false)
+    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,false)
 ptukey(q::Number, nmeans::Number, df::Number, nranges::Number) =
-    ccall((:ptukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,true,false)
+    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,true,false)
 ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool) =
     reshape([ptukey(q[i],nmeans,df,nranges,lower_tail,log_p) for i=1:length(q)], size(q))
 ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool) =
@@ -605,13 +614,13 @@ ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Numb
 
 ## tukey (Studentized Range Distribution - p and q only - 3pars)
 ptukey(q::Number, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool) =
-    ccall((:ptukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,log_p)
+    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,log_p)
 ptukey(q::Number, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool) =
-    ccall((:ptukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,false)
+    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,false)
 ptukey(q::Number, nmeans::Number, df::Number, nranges::Number) =
-    ccall((:ptukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,true,false)
+    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,true,false)
 ptukey(q::Number, nmeans::Number, df::Number, nranges::Number) =
-    ccall((:ptukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,1.,df,true,false)
+    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,1.,df,true,false)
 ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool) =
     reshape([ptukey(q[i],nmeans,df,nranges,lower_tail,log_p) for i=1:length(q)], size(q))
 ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool) =
@@ -622,13 +631,13 @@ ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number) =
     reshape([ptukey(q[i],nmeans,df,1.,true,false) for i=1:length(q)], size(q))
 
 qtukey(q::Number, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool) =
-    ccall((:qtukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),p,nranges,nmeans,df,lower_tail,log_p)
+    ccall((:qtukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),p,nranges,nmeans,df,lower_tail,log_p)
 qtukey(p::Number, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool) =
-    ccall((:qtukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),p,nranges,nmeans,df,lower_tail,false)
+    ccall((:qtukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),p,nranges,nmeans,df,lower_tail,false)
 qtukey(p::Number, nmeans::Number, df::Number, nranges::Number) =
-    ccall((:qtukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),p,nranges,nmeans,df,true,false)
+    ccall((:qtukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),p,nranges,nmeans,df,true,false)
 qtukey(p::Number, nmeans::Number, df::Number) =
-    ccall((:qtukey,:libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),p,nranges,1.,df,true,false)
+    ccall((:qtukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),p,nranges,1.,df,true,false)
 qtukey{T<:Number}(p::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool) =
     reshape([qtukey(p[i],nmeans,df,nranges,lower_tail,log_p) for i=1:length(p)], size(p))
 qtukey{T<:Number}(p::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool) =
