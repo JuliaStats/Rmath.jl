@@ -1,4 +1,4 @@
-require("test")
+using Base.Test
 using Rmath
 
 srand(124)
