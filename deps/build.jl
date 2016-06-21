@@ -4,6 +4,8 @@ using BinDeps
 
 libRmath = library_dependency("libRmath", aliases=["libRmath-julia2"])
 version = "0.1"
+# Best practice to use a fixed version here, either a version number tag or a git sha
+# Please don't download "latest master" because the version that works today might not work tomorrow
 
 # TODO replace tkelman with JuliaLang later
 provides(Sources, URI("https://github.com/tkelman/Rmath-julia/archive/v$version.tar.gz"),
