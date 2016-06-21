@@ -182,7 +182,7 @@ module Rmath
         quote
             let gc_tracking_obj = []
                 global $func
-                function $libcall(x::Vector{None})
+                function $libcall(x::Vector{Union{}})
                     gc_tracking_obj = []
                     ccall(($(string(libcall)),:libRmath), Void, ())
                 end
