@@ -22,6 +22,7 @@ provides(SimpleBuild,
         @build_steps begin
             ChangeDirectory(srcdir)
             `make`
+            `mv src/libRmath-julia.$(Libdl.dlext) $prefix/lib`
         end
     end), [libRmath], os = :Unix)
 
