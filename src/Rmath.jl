@@ -4,6 +4,8 @@
 
 module Rmath
 
+using Compat
+
 # use dirname(@__FILE__) instead of Pkg.dir, since the latter will
 # cause the package to not work if installed in some other location
 depsjl = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
@@ -58,12 +60,6 @@ end
                                                             z::AbstractArray{T3})
                 shp = promote_shape(size(y), size(z))
                 reshape([$f(x, y[i], z[i]) for i=1:length(y)], shp)
-            end
-            function $f{T1<:Number, T2<:Number, T3<:Number}(x::AbstractArray{T1},
-                                                            y::T2,
-                                                            z::AbstractArray{T3})
-                shp = promote_shape(size(x), size(z))
-                reshape([$f(x[i], y, z[i]) for i=1:length(x)], shp)
             end
             function $f{T1<:Number, T2<:Number, T3<:Number}(x::AbstractArray{T1},
                                                             y::T2,
@@ -186,8 +182,8 @@ end
 
     ## Macro for deferring freeing data until GC for wilcox and signrank
     macro libRmath_deferred_free(base)
-        libcall = symbol(string(base, "_free"))
-        func = symbol(string(base, "_deferred_free"))
+        libcall = Symbol(base, "_free")
+        func = Symbol(base, "_deferred_free")
         quote
             let gc_tracking_obj = []
                 global $func
@@ -207,9 +203,9 @@ end
 
     ## Non-ccall functions for distributions with 1 parameter and no defaults
     macro libRmath_1par_0d_aliases(base)
-        dd = symbol(string("d", base))
-        pp = symbol(string("p", base))
-        qq = symbol(string("q", base))
+        dd = Symbol("d", base)
+        pp = Symbol("p", base)
+        qq = Symbol("q", base)
         quote
             global $dd, $pp, $qq
             $dd{T<:Number}(x::AbstractArray{T}, p1::Number, give_log::Bool) =
@@ -233,10 +229,10 @@ end
 
     ## Distributions with 1 parameter and no default
     macro libRmath_1par_0d(base)
-        dd = symbol(string("d", base))
-        pp = symbol(string("p", base))
-        qq = symbol(string("q", base))
-        rr = symbol(string("r", base))   
+        dd = Symbol("d", base)
+        pp = Symbol("p", base)
+        qq = Symbol("q", base)
+        rr = Symbol("r", base)
         quote
             global $dd, $pp, $qq, $rr
             $dd(x::Number, p1::Number, give_log::Bool) = 
@@ -280,10 +276,10 @@ end
 
     ## Distributions with 1 parameter and a default
     macro libRmath_1par_1d(base, d1)
-        dd = symbol(string("d", base))
-        pp = symbol(string("p", base))
-        qq = symbol(string("q", base))
-        rr = symbol(string("r", base))   
+        dd = Symbol("d", base)
+        pp = Symbol("p", base)
+        qq = Symbol("q", base)
+        rr = Symbol("r", base)
         quote
             global $dd, $pp, $qq, $rr
             $dd(x::Number, p1::Number, give_log::Bool) = 
@@ -338,9 +334,9 @@ end
 
 ## Non-ccall functions for distributions with 2 parameters and no defaults
 macro libRmath_2par_0d_aliases(base)
-    dd = symbol(string("d", base))
-    pp = symbol(string("p", base))
-    qq = symbol(string("q", base))
+    dd = Symbol("d", base)
+    pp = Symbol("p", base)
+    qq = Symbol("q", base)
     quote
         global $dd, $pp, $qq
         $dd{T<:Number}(x::AbstractArray{T}, p1::Number, p2::Number, give_log::Bool) =
@@ -368,10 +364,10 @@ end
 
 ## Distributions with 2 parameters and no defaults
 macro libRmath_2par_0d(base)
-    dd = symbol(string("d", base))
-    pp = symbol(string("p", base))
-    qq = symbol(string("q", base))
-    rr = symbol(string("r", base))    
+    dd = Symbol("d", base)
+    pp = Symbol("p", base)
+    qq = Symbol("q", base)
+    rr = Symbol("r", base)
     quote
         global $dd, $pp, $qq, $rr
         $dd(x::Number, p1::Number, p2::Number, give_log::Bool) =
@@ -414,10 +410,10 @@ rwilcox(nn::Integer, p1::Number, p2::Number) =
 
 ## Distributions with 2 parameters and 1 default
 macro libRmath_2par_1d(base, d2)
-    dd = symbol(string("d", base))
-    pp = symbol(string("p", base))
-    qq = symbol(string("q", base))
-    rr = symbol(string("r", base))    
+    dd = Symbol("d", base)
+    pp = Symbol("p", base)
+    qq = Symbol("q", base)
+    rr = Symbol("r", base)
     quote
         global $dd, $pp, $qq, $rr
         $dd(x::Number, p1::Number, p2::Number, give_log::Bool) =
@@ -472,10 +468,10 @@ end
 
 ## Distributions with 2 parameters and 2 defaults
 macro libRmath_2par_2d(base, d1, d2)
-    ddsym = dd = symbol(string("d", base))
-    ppsym = pp = symbol(string("p", base))
-    qqsym = qq = symbol(string("q", base))
-    rr = symbol(string("r", base))    
+    ddsym = dd = Symbol("d", base)
+    ppsym = pp = Symbol("p", base)
+    qqsym = qq = Symbol("q", base)
+    rr = Symbol("r", base)
     if (string(base) == "norm")
         ddsym = :dnorm4
         ppsym = :pnorm5
@@ -556,10 +552,10 @@ end
 
 ## Distributions with 3 parameters and no defaults
 macro libRmath_3par_0d(base)
-    dd = symbol(string("d", base))
-    pp = symbol(string("p", base))
-    qq = symbol(string("q", base))
-    rr = symbol(string("r", base))    
+    dd = Symbol("d", base)
+    pp = Symbol("p", base)
+    qq = Symbol("q", base)
+    rr = Symbol("r", base)
     quote
         global $dd, $pp, $qq, $rr
         $dd(x::Number, p1::Number, p2::Number, p3::Number, give_log::Bool) =
@@ -605,22 +601,6 @@ ptukey(q::Number, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool)
     ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,false)
 ptukey(q::Number, nmeans::Number, df::Number, nranges::Number) =
     ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,true,false)
-ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool) =
-    reshape([ptukey(q[i],nmeans,df,nranges,lower_tail,log_p) for i=1:length(q)], size(q))
-ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool) =
-    reshape([ptukey(q[i],nmeans,df,nranges,lower_tail,false) for i=1:length(q)], size(q))
-ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number) =
-    reshape([ptukey(q[i],nmeans,df,nranges,true,false) for i=1:length(q)], size(q))
-
-## tukey (Studentized Range Distribution - p and q only - 3pars)
-ptukey(q::Number, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool) =
-    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,log_p)
-ptukey(q::Number, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool) =
-    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,false)
-ptukey(q::Number, nmeans::Number, df::Number, nranges::Number) =
-    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,true,false)
-ptukey(q::Number, nmeans::Number, df::Number, nranges::Number) =
-    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,1.,df,true,false)
 ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool) =
     reshape([ptukey(q[i],nmeans,df,nranges,lower_tail,log_p) for i=1:length(q)], size(q))
 ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool) =
