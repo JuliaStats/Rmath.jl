@@ -2,3 +2,6 @@ downloads
 src
 usr
 deps.jl
+bin32
+bin64
+COPYING
