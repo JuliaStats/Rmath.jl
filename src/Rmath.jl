@@ -2,6 +2,8 @@
 ## This module is for archival purposes.  The interface in the
 ## Distributions module is much more effective.
 
+__precompile__()
+
 module Rmath
 
 using Compat
