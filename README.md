@@ -1,6 +1,11 @@
 Rmath.jl
 ========
 
+[![Rmath](http://pkg.julialang.org/badges/Rmath_0.4.svg)](http://pkg.julialang.org/?pkg=Rmath)
+[![Rmath](http://pkg.julialang.org/badges/Rmath_0.5.svg)](http://pkg.julialang.org/?pkg=Rmath)
+[![Travis](https://travis-ci.org/JuliaStats/Rmath.jl.svg?branch=master)](https://travis-ci.org/JuliaStats/Rmath.jl)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/github/JuliaStats/Rmath.jl?svg=true&branch=master)](https://ci.appveyor.com/project/andreasnoack/rmath-jl/branch/master)
+
 Archive of functions that emulate R's d-p-q-r functions for probability distributions.
 
 This package will download and compile [libRmath-julia](https://github.com/JuliaLang/Rmath-julia)
