@@ -2,7 +2,7 @@ using BinDeps
 
 @BinDeps.setup
 
-libRmath = library_dependency("libRmath", aliases=["libRmath-julia"])
+libRmath = library_dependency("libRmathjulia", aliases=["libRmath-julia"])
 version = "0.1"
 # Best practice to use a fixed version here, either a version number tag or a git sha
 # Please don't download "latest master" because the version that works today might not work tomorrow
@@ -35,4 +35,4 @@ provides(SimpleBuild,
         end
     end), [libRmath], os = :Unix)
 
-@BinDeps.install Dict(:libRmath => :libRmath)
+@BinDeps.install Dict(:libRmathjulia => :libRmath)
