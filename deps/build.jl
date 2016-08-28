@@ -13,6 +13,28 @@ provides(Sources, URI("https://github.com/JuliaLang/Rmath-julia/archive/v$versio
 prefix = joinpath(BinDeps.depsdir(libRmath), "usr")
 srcdir = joinpath(BinDeps.srcdir(libRmath), "Rmath-julia-$version")
 
+dSFMTversion="2.2.3"
+dSFMT=library_dependency("libdSFMT")
+srcdir_dsfmt= joinpath(BinDeps.srcdir(dSFMT),"dSFMT-src-$(dSFMTversion)")
+provides(Sources, URI("http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/dSFMT-src-$(dSFMTversion).tar.gz"),
+    [dSFMT], unpacked_dir="dSFMT-src-$(dSFMTversion)")
+
+# This does not actually run since "libdSFMT" is provided by julia
+provides(SimpleBuild,
+    (@build_steps begin
+        GetSources(dSFMT)
+        CreateDirectory(joinpath(prefix, "lib"))
+        @build_steps begin
+            ChangeDirectory(srcdir_dsfmt)
+            `gcc -DNDEBUG -DDSFMT_MEXP=19937 -DDSFMT_DO_NOT_USE_OLD_NAMES \
+                -O3 -finline-functions -fomit-frame-pointer -fno-strict-aliasing \
+                --param max-inline-insns-single=1800 -Wmissing-prototypes -Wall  -std=c99 -shared \
+                -msse2 -DHAVE_SSE2 \
+                dSFMT.c -o libdSFMT.$(Libdl.dlext)`
+            `mv libdSFMT.$(Libdl.dlext) $prefix/lib`
+        end
+    end), [dSFMT],os=:Unix)
+
 # These Windows binaries were taken from `make -C deps install-Rmath-julia`
 # in a Cygwin cross-compile from the release-0.4 branch of julia
 # Future work: standalone cross-compiled binaries using openSUSE docker container
@@ -27,10 +49,12 @@ provides(Binaries,
 provides(SimpleBuild,
     (@build_steps begin
         GetSources(libRmath)
+        GetSources(dSFMT)
         CreateDirectory(joinpath(prefix, "lib"))
+        `cp $(Libdl.dlpath("libdSFMT")) $prefix/lib`
         @build_steps begin
             ChangeDirectory(srcdir)
-            `make`
+            `make USE_DSFMT=1 DSFMT_includedir=$(srcdir_dsfmt) DSFMT_libdir=$(prefix)/lib`
             `mv src/libRmath-julia.$(Libdl.dlext) $prefix/lib`
         end
     end), [libRmath], os = :Unix)
