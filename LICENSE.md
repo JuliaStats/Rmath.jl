@@ -20,3 +20,9 @@ The Rmath module is licensed under the MIT License:
 > LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 > OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 > WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+The package contains code from the project [dSFMT](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/)
+which has its own [license](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/LICENSE.txt).
+And the code is modifed by the [Julia Project](http://julialang.org) with
+their own [license](https://github.com/JuliaLang/julia/blob/master/LICENSE.md).
+
