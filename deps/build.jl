@@ -30,9 +30,9 @@ provides(SimpleBuild,
         CreateDirectory(joinpath(prefix, "lib"))
         @build_steps begin
             ChangeDirectory(srcdir)
-            `make USE_DSFMT=1 DSFMT_includedir=$(joinpath(BinDeps.depsdir(libRmath),"dSFMT"))
-                DSFMT_libdir=$(dirname(Libdl.dlpath("libdSFMT")))`
-            `mv src/libRmath-julia.$(Libdl.dlext) $prefix/lib`
+            `make USE_DSFMT=1 DSFMT_includedir="$(joinpath(BinDeps.depsdir(libRmath),"dSFMT"))"
+                DSFMT_libdir="$(dirname(Libdl.dlpath("libdSFMT")))"`
+            `mv src/libRmath-julia.$(Libdl.dlext) "$prefix/lib"`
         end
     end), [libRmath], os = :Unix)
 
