@@ -44,8 +44,7 @@ end
 
     # To be removed when 0.5 support is dropped
     macro dep_vectorize_3arg(f)
-        quote
-            global $f
+        esc(quote
             @deprecate($f{T1<:Number, T2<:Number, T3<:Number}(x::AbstractArray{T1}, y::T2, z::T3),
                        @compat $f.(x, y, z))
             @deprecate($f{T1<:Number, T2<:Number, T3<:Number}(x::T1, y::AbstractArray{T2}, z::T3),
@@ -68,14 +67,13 @@ end
                                                               y::AbstractArray{T2},
                                                               z::AbstractArray{T3}),
                        @compat $f.(x, y, z))
-        end
+        end)
     end
 
     ## Vectorize over four numeric arguments
     # To be removed when 0.5 support is dropped
     macro dep_vectorize_4arg(f)
-        quote
-            global $f
+        esc(quote
             @deprecate($f{T1<:Number, T2<:Number, T3<:Number, T4<:Number}(a1::AbstractArray{T1},
                                                                           a2::T2,
                                                                           a3::T3,
@@ -151,7 +149,7 @@ end
                                                               a3::AbstractArray{T3},
                                                               a4::AbstractArray{T4}),
            @compat $f.(a1, a2, a3, a4))
-        end
+        end)
     end
 
     ## Macro for deferring freeing data until GC for wilcox and signrank
@@ -180,8 +178,7 @@ end
         dd = Symbol("d", base)
         pp = Symbol("p", base)
         qq = Symbol("q", base)
-        quote
-            global $dd, $pp, $qq
+        esc(quote
             @deprecate($dd{T<:Number}(x::AbstractArray{T}, p1::Number, give_log::Bool),
                        @compat $dd.(x, p1, give_log))
             $dd(x::Number, p1::Number) = $dd(x, p1, false)
@@ -200,7 +197,7 @@ end
                        @compat $qq.(p, p1, lower_tail))
             $qq(p::Number, p1::Number) = $qq(p, p1, true, false)
             Compat.@dep_vectorize_2arg Number $qq
-        end
+        end)
     end
 
     ## Distributions with 1 parameter and no default
@@ -209,8 +206,7 @@ end
         pp = Symbol("p", base)
         qq = Symbol("q", base)
         rr = Symbol("r", base)
-        quote
-            global $dd, $pp, $qq, $rr
+        esc(quote
             $dd(x::Number, p1::Number, give_log::Bool) =
                 ccall(($(string(dd)),libRmath), Float64,
                       (Float64,Float64,Int32), x, p1, give_log)
@@ -222,8 +218,8 @@ end
                       (Float64,Float64,Int32,Int32), p, p1, lower_tail, log_p)
             $rr(nn::Integer, p1::Number) =
                 [ccall(($(string(rr)),libRmath), Float64, (Float64,), p1) for i=1:nn]
-            @libRmath_1par_0d_aliases $base
-        end
+            @libRmath_1par_0d_aliases $(base)
+        end)
     end
 
     @libRmath_1par_0d t
@@ -256,8 +252,7 @@ end
         pp = Symbol("p", base)
         qq = Symbol("q", base)
         rr = Symbol("r", base)
-        quote
-            global $dd, $pp, $qq, $rr
+        esc(quote
             $dd(x::Number, p1::Number, give_log::Bool) =
                 ccall(($(string(dd)),libRmath), Float64, (Float64,Float64,Int32), x, p1, give_log)
             @deprecate($dd{T<:Number}(x::AbstractArray{T}, p1::Number, give_log::Bool),
@@ -309,7 +304,7 @@ end
             $rr(nn::Integer, p1::Number) =
                 [ccall(($(string(rr)),libRmath), Float64, (Float64,), p1) for i=1:nn]
             $rr(nn::Integer) = $rr(nn, $d1)
-    end
+    end)
 end
 
 ## May need to handle this as a special case.  The Rmath library uses 1/rate, not rate
@@ -320,8 +315,7 @@ macro libRmath_2par_0d_aliases(base)
     dd = Symbol("d", base)
     pp = Symbol("p", base)
     qq = Symbol("q", base)
-    quote
-        global $dd, $pp, $qq
+    esc(quote
         @deprecate($dd{T<:Number}(x::AbstractArray{T}, p1::Number, p2::Number, give_log::Bool),
                    @compat $dd.(x, p1, p2, give_log))
         $dd(x::Number, p1::Number, p2::Number) = $dd(x, p1, p2, false)
@@ -342,7 +336,7 @@ macro libRmath_2par_0d_aliases(base)
                    @compat $qq.(p, p1, p2, lower_tail))
         $qq(p::Number, p1::Number, p2::Number) = $qq(p, p1, p2, true, false)
         @dep_vectorize_3arg $qq
-    end
+    end)
 end
 
 ## Distributions with 2 parameters and no defaults
@@ -351,8 +345,7 @@ macro libRmath_2par_0d(base)
     pp = Symbol("p", base)
     qq = Symbol("q", base)
     rr = Symbol("r", base)
-    quote
-        global $dd, $pp, $qq, $rr
+    esc(quote
         $dd(x::Number, p1::Number, p2::Number, give_log::Bool) =
             ccall(($(string(dd)),libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
         $pp(q::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
@@ -362,7 +355,7 @@ macro libRmath_2par_0d(base)
         $rr(nn::Integer, p1::Number, p2::Number) =
             [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
         @libRmath_2par_0d_aliases $base
-    end
+    end)
 end
 
 @libRmath_2par_0d beta        # Beta distribution (shape1, shape2)
@@ -397,8 +390,7 @@ macro libRmath_2par_1d(base, d2)
     pp = Symbol("p", base)
     qq = Symbol("q", base)
     rr = Symbol("r", base)
-    quote
-        global $dd, $pp, $qq, $rr
+    esc(quote
         $dd(x::Number, p1::Number, p2::Number, give_log::Bool) =
             ccall(($(string(dd)),libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
         @deprecate($dd{T<:Number}(x::AbstractArray{T}, p1::Number, p2::Number, give_log::Bool),
@@ -450,7 +442,7 @@ macro libRmath_2par_1d(base, d2)
         $rr(nn::Integer, p1::Number, p2::Number) =
             [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
         $rr(nn::Integer, p1::Number) = $rr(nn, p1, $d2)
-    end
+    end)
 end
 
 @libRmath_2par_1d gamma 1     # Gamma distribution  (shape, scale)
@@ -467,8 +459,7 @@ macro libRmath_2par_2d(base, d1, d2)
         ppsym = :pnorm5
         qqsym = :qnorm5
     end
-    quote
-        global $dd, $pp, $qq, $rr
+    esc(quote
         $dd(x::Number, p1::Number, p2::Number, give_log::Bool) =
             ccall(($(string(ddsym)),libRmath), Float64, (Float64,Float64,Float64,Int32), x, p1, p2, give_log)
         @deprecate($dd{T<:Number}(x::AbstractArray{T}, p1::Number, p2::Number, give_log::Bool),
@@ -542,7 +533,7 @@ macro libRmath_2par_2d(base, d1, d2)
             [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
         $rr(nn::Integer, p1::Number) = $rr(nn, p1, $d2)
         $rr(nn::Integer) = $rr(nn, $d1, $d2)
-    end
+    end)
 end
 
 @libRmath_2par_2d cauchy 0 1  # Cauchy distribution (location, scale)
@@ -557,8 +548,7 @@ macro libRmath_3par_0d(base)
     pp = Symbol("p", base)
     qq = Symbol("q", base)
     rr = Symbol("r", base)
-    quote
-        global $dd, $pp, $qq, $rr
+    esc(quote
         $dd(x::Number, p1::Number, p2::Number, p3::Number, give_log::Bool) =
             ccall(($(string(dd)),libRmath), Float64, (Float64,Float64,Float64,Float64,Int32), x, p1, p2, p3, give_log)
         @deprecate($dd{T<:Number}(x::AbstractArray{T}, p1::Number, p2::Number, p3::Number, give_log::Bool),
@@ -588,7 +578,7 @@ macro libRmath_3par_0d(base)
 
         $rr(nn::Integer, p1::Number, p2::Number, p3::Number) =
             [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64,Float64), p1, p2, p3) for i=1:nn]
-    end
+    end)
 end
 
 @libRmath_3par_0d hyper       # Hypergeometric (m, n, k)
