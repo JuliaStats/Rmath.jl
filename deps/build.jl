@@ -1,4 +1,4 @@
-using BinDeps
+using BinDeps, Compat
 
 @BinDeps.setup
 
@@ -22,6 +22,10 @@ provides(Binaries,
     SHA="d70db19ce7c1aa11015ff9e25e08d068bb80d1237570c9d60ece372712dd3754",
     os = :Windows)
 
+# BSD systems (other than macOS) use BSD Make rather than GNU Make by default
+# We need GNU Make, and on such systems GNU make is invoked as `gmake`
+make = is_bsd() && !is_apple() ? "gmake" : "make"
+
 # If your library uses configure or cmake, good idea to do an
 # out-of-tree build - see examples in JuliaOpt and JuliaWeb
 provides(SimpleBuild,
@@ -30,7 +34,7 @@ provides(SimpleBuild,
         CreateDirectory(joinpath(prefix, "lib"))
         @build_steps begin
             ChangeDirectory(srcdir)
-            `make USE_DSFMT=1 DSFMT_includedir="$(joinpath(BinDeps.depsdir(libRmath),"dSFMT"))"
+            `$make USE_DSFMT=1 DSFMT_includedir="$(joinpath(BinDeps.depsdir(libRmath),"dSFMT"))"
                 DSFMT_libdir="$(dirname(Libdl.dlpath("libdSFMT")))"`
             `mv src/libRmath-julia.$(Libdl.dlext) "$prefix/lib"`
         end
