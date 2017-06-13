@@ -577,7 +577,7 @@ macro libRmath_3par_0d(base)
         @dep_vectorize_4arg $qq
 
         $rr(nn::Integer, p1::Number, p2::Number, p3::Number) =
-            [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64,Float64), p1, p2, p3) for i=1:nn]
+            [ccall(($(string(rr)), libRmath), Float64, (Float64, Float64, Float64), p1, p2, p3) for i = 1:nn]
     end)
 end
 
@@ -588,26 +588,30 @@ end
 ## tukey (Studentized Range Distribution - p and q only - 3pars)
 ptukey(q::Number, nmeans::Number, df::Number, nranges::Number=1.0,
        lower_tail::Bool=true, log_p::Bool=false) =
-    ccall((:ptukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),q,nranges,nmeans,df,lower_tail,log_p)
+    ccall((:ptukey, libRmath), Float64,
+        (Float64, Float64, Float64, Float64, Int32, Int32),
+        q, nranges, nmeans, df, lower_tail, log_p)
 @deprecate(ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool),
-           @compat ptukey.(q,nmeans,df,nranges,lower_tail,log_p))
+           @compat ptukey.(q, nmeans, df, nranges, lower_tail, log_p))
 @deprecate(ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool),
-           @compat ptukey.(q,nmeans,df,nranges,lower_tail))
+           @compat ptukey.(q, nmeans, df, nranges, lower_tail))
 @deprecate(ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number),
-           @compat ptukey.(q,nmeans,df,nranges))
+           @compat ptukey.(q, nmeans, df, nranges))
 @deprecate(ptukey{T<:Number}(q::AbstractArray{T}, nmeans::Number, df::Number),
-           @compat ptukey.(q,nmeans,df))
+           @compat ptukey.(q, nmeans, df))
 
 qtukey(q::Number, nmeans::Number, df::Number, nranges::Number=1.0,
        lower_tail::Bool=true, log_p::Bool=false) =
-    ccall((:qtukey,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32),p,nranges,nmeans,df,lower_tail,log_p)
+    ccall((:qtukey ,libRmath), Float64,
+        (Float64, Float64, Float64, Float64, Int32, Int32),
+        p, nranges, nmeans, df, lower_tail, log_p)
 @deprecate(qtukey{T<:Number}(p::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool, log_p::Bool),
-           @compat qtukey.(p,nmeans,df,nranges,lower_tail,log_p))
+           @compat qtukey.(p, nmeans, df, nranges, lower_tail, log_p))
 @deprecate(qtukey{T<:Number}(p::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number, lower_tail::Bool),
-           @compat qtukey.(p,nmeans,df,nranges,lower_tail))
+           @compat qtukey.(p, nmeans, df, nranges, lower_tail))
 @deprecate(qtukey{T<:Number}(p::AbstractArray{T}, nmeans::Number, df::Number, nranges::Number),
-           @compat qtukey.(p,nmeans,df,nranges))
+           @compat qtukey.(p, nmeans, df, nranges))
 @deprecate(qtukey{T<:Number}(p::AbstractArray{T}, nmeans::Number, df::Number),
-           @compat qtukey.(p,nmeans,df))
+           @compat qtukey.(p, nmeans, df))
 
 end #module
