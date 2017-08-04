@@ -42,6 +42,16 @@ end
     export dwilcox,pwilcox,qwilcox,rwilcox # Wilcox's Rank Sum statistic (m, n)
     export ptukey, qtukey              # Studentized Range Distribution - p and q only
 
+function __init__()
+    # initialize RNG hooks
+    unsafe_store!(cglobal((:unif_rand_ptr,libRmath),Ptr{Void}),
+                  cfunction(rand,Float64,()))
+    unsafe_store!(cglobal((:norm_rand_ptr,libRmath),Ptr{Void}),
+                  cfunction(randn,Float64,()))
+    unsafe_store!(cglobal((:exp_rand_ptr,libRmath),Ptr{Void}),
+                  cfunction(randexp,Float64,()))
+end
+
     # To be removed when 0.5 support is dropped
     macro dep_vectorize_3arg(f)
         esc(quote
