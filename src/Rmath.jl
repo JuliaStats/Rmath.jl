@@ -43,11 +43,11 @@ end
 function __init__()
     # initialize RNG hooks
     unsafe_store!(cglobal((:unif_rand_ptr,libRmath),Ptr{Void}),
-                  cfunction(rand,Float64,()))
+                  cfunction(rand,Float64,Tuple{}))
     unsafe_store!(cglobal((:norm_rand_ptr,libRmath),Ptr{Void}),
-                  cfunction(randn,Float64,()))
+                  cfunction(randn,Float64,Tuple{}))
     unsafe_store!(cglobal((:exp_rand_ptr,libRmath),Ptr{Void}),
-                  cfunction(randexp,Float64,()))
+                  cfunction(randexp,Float64,Tuple{}))
 end
 
     ## Macro for deferring freeing data until GC for wilcox and signrank
