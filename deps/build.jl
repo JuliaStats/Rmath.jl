@@ -1,3 +1,8 @@
+if Sys.KERNEL === :Darwin && (!success(`command -v xcode-select`) || isempty(readchomp(`xcode-select -p`)))
+    error("Building Rmath on macOS requires the Xcode command line tools to be installed.\n",
+          "You can install them from the command line using `xcode-select --install`.")
+end
+
 using BinDeps
 
 @BinDeps.setup
