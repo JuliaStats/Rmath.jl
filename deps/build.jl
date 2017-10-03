@@ -1,6 +1,15 @@
-if Sys.KERNEL === :Darwin && (!success(`command -v xcode-select`) || isempty(readchomp(`xcode-select -p`)))
+using Compat
+using Compat.Sys: isapple, iswindows
+
+if isapple() && (!success(`command -v xcode-select`) || isempty(readchomp(`xcode-select -p`)))
     error("Building Rmath on macOS requires the Xcode command line tools to be installed.\n",
           "You can install them from the command line using `xcode-select --install`.")
+end
+
+if !iswindows() && !(success(`command -v make`) || success(`command -v gmake`))
+    error("Building Rmath requires GNU Make to be installed. You can install it from your\n",
+          "system's package manager, e.g. `apt-get install build-essentials` on Ubuntu or\n",
+          "`pkg install gmake` on FreeBSD.")
 end
 
 using BinDeps
