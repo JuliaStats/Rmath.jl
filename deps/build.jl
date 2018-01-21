@@ -3,7 +3,7 @@ if Sys.KERNEL === :Darwin && (!success(`command -v xcode-select`) || isempty(rea
           "You can install them from the command line using `xcode-select --install`.")
 end
 
-using BinDeps
+using BinDeps, Compat.Libdl
 
 @BinDeps.setup
 

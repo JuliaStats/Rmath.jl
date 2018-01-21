@@ -1,7 +1,6 @@
-using Base.Test
-using Rmath
+using Rmath, Compat, Compat.Test, Compat.Random
 
-srand(124)
+Random.srand(124)
 
 function allEq(target::Vector{Float64}, current::Vector{Float64}, tolerance::Float64)
     @test length(target) == length(current)

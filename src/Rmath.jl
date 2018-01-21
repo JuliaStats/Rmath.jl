@@ -6,6 +6,8 @@ __precompile__()
 
 module Rmath
 
+using Compat, Compat.Random
+
 # use dirname(@__FILE__) instead of Pkg.dir, since the latter will
 # cause the package to not work if installed in some other location
 depsjl = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
@@ -42,33 +44,33 @@ end
 
 function __init__()
     # initialize RNG hooks
-    unsafe_store!(cglobal((:unif_rand_ptr,libRmath),Ptr{Void}),
+    unsafe_store!(cglobal((:unif_rand_ptr,libRmath),Ptr{Cvoid}),
                   cfunction(rand,Float64,Tuple{}))
-    unsafe_store!(cglobal((:norm_rand_ptr,libRmath),Ptr{Void}),
+    unsafe_store!(cglobal((:norm_rand_ptr,libRmath),Ptr{Cvoid}),
                   cfunction(randn,Float64,Tuple{}))
-    unsafe_store!(cglobal((:exp_rand_ptr,libRmath),Ptr{Void}),
-                  cfunction(randexp,Float64,Tuple{}))
+    unsafe_store!(cglobal((:exp_rand_ptr,libRmath),Ptr{Cvoid}),
+                  cfunction(Random.randexp,Float64,Tuple{}))
 end
 
     ## Macro for deferring freeing data until GC for wilcox and signrank
     macro libRmath_deferred_free(base)
         libcall = Symbol(base, "_free")
         func = Symbol(base, "_deferred_free")
-        quote
+        esc(quote
             let gc_tracking_obj = []
                 global $func
                 function $libcall(x::Vector)
                     gc_tracking_obj = []
-                    ccall(($(string(libcall)),libRmath), Void, ())
+                    ccall(($(string(libcall)),libRmath), Cvoid, ())
                 end
                 function $func()
                     if !isa(gc_tracking_obj, Bool)
-                        finalizer(gc_tracking_obj, $libcall)
+                        @compat finalizer($libcall, gc_tracking_obj)
                         gc_tracking_obj = false
                     end
                 end
             end
-        end
+        end)
     end
 
     ## Non-ccall functions for distributions with 1 parameter and no defaults
