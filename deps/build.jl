@@ -3,8 +3,9 @@ using BinaryProvider
 # This is where all binaries will get installed
 const prefix = Prefix(!isempty(ARGS) ? ARGS[1] : joinpath(@__DIR__,"usr"))
 
+libRmath = LibraryProduct(prefix, String["libRmath-julia"])
 products = [
-LibraryProduct(prefix, String["libRmath-julia"])
+libRmath
 ]
 
 # Download binaries from hosted location
