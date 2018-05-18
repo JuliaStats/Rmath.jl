@@ -42,14 +42,26 @@ end
     export dwilcox,pwilcox,qwilcox,rwilcox # Wilcox's Rank Sum statistic (m, n)
     export ptukey, qtukey              # Studentized Range Distribution - p and q only
 
-function __init__()
-    # initialize RNG hooks
-    unsafe_store!(cglobal((:unif_rand_ptr,libRmath),Ptr{Cvoid}),
-                  cfunction(rand,Float64,Tuple{}))
-    unsafe_store!(cglobal((:norm_rand_ptr,libRmath),Ptr{Cvoid}),
-                  cfunction(randn,Float64,Tuple{}))
-    unsafe_store!(cglobal((:exp_rand_ptr,libRmath),Ptr{Cvoid}),
-                  cfunction(Random.randexp,Float64,Tuple{}))
+@static if VERSION ≥ v"0.7.0-DEV.4749"
+    function __init__()
+        # initialize RNG hooks
+        unsafe_store!(cglobal((:unif_rand_ptr,libRmath),Ptr{Cvoid}),
+                      @cfunction(rand,Float64,()))
+        unsafe_store!(cglobal((:norm_rand_ptr,libRmath),Ptr{Cvoid}),
+                      @cfunction(randn,Float64,()))
+        unsafe_store!(cglobal((:exp_rand_ptr,libRmath),Ptr{Cvoid}),
+                      @cfunction(Random.randexp,Float64,()))
+    end
+else
+    function __init__()
+        # initialize RNG hooks
+        unsafe_store!(cglobal((:unif_rand_ptr,libRmath),Ptr{Cvoid}),
+                      cfunction(rand,Float64,Tuple{}))
+        unsafe_store!(cglobal((:norm_rand_ptr,libRmath),Ptr{Cvoid}),
+                      cfunction(randn,Float64,Tuple{}))
+        unsafe_store!(cglobal((:exp_rand_ptr,libRmath),Ptr{Cvoid}),
+                      cfunction(Random.randexp,Float64,Tuple{}))
+    end
 end
 
     ## Macro for deferring freeing data until GC for wilcox and signrank
