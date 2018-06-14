@@ -33,9 +33,13 @@ allEq(target::Vector{Float64}, current::Vector{Float64}) =
 @test abs(dcauchy(0, 0, 1) - (1 / pi) * (1 / ((0 - 0)^2 + 1^2))) < 10e-8
 @test abs(dcauchy(0, 1, 2) - (1 / pi) * (2 / ((0 - 1)^2 + 2^2))) < 10e-8
 
+# define gammaR from Rmath to avoid introducing dependency on SpecialFunctions
+# where gamma is located starting with Julia 0.7
+gammaR(x::Float64) = ccall((:gammafn, Rmath.libRmath), Float64, (Float64,), x)
+
 # dchisq
-@test abs(dchisq(1, 1) - let x = 1; k = 1; (x^((k / 2) - 1) * exp(-(x / 2))) / (2^(k / 2) * gamma(k / 2)) end) < 10e-8
-@test abs(dchisq(2, 3) - let x = 2; k = 3; (x^((k / 2) - 1) * exp(-(x / 2))) / (2^(k / 2) * gamma(k / 2)) end) < 10e-8
+@test abs(dchisq(1, 1) - let x = 1; k = 1; (x^((k / 2) - 1) * exp(-(x / 2))) / (2^(k / 2) * gammaR(k / 2)) end) < 10e-8
+@test abs(dchisq(2, 3) - let x = 2; k = 3; (x^((k / 2) - 1) * exp(-(x / 2))) / (2^(k / 2) * gammaR(k / 2)) end) < 10e-8
 
 # dexp
 @test abs(dexp(1, 2) - (1 / 2) * exp(-(1 / 2) * 1)) < 10e-8
