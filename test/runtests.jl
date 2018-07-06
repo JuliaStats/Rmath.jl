@@ -1,4 +1,4 @@
-using Rmath, Compat, Compat.Test, Compat.Random
+using Random, Rmath, Statistics, Test
 
 Random.srand(124)
 

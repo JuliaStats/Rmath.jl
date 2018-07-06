@@ -6,11 +6,11 @@ __precompile__()
 
 module Rmath
 
-using Compat, Compat.Random
+using Random
 
 # use dirname(@__FILE__) instead of Pkg.dir, since the latter will
 # cause the package to not work if installed in some other location
-depsjl = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
+depsjl = joinpath(@__DIR__, "..", "deps", "deps.jl")
 if isfile(depsjl)
     include(depsjl)
 else
@@ -77,7 +77,7 @@ end
                 end
                 function $func()
                     if !isa(gc_tracking_obj, Bool)
-                        @compat finalizer($libcall, gc_tracking_obj)
+                        finalizer($libcall, gc_tracking_obj)
                         gc_tracking_obj = false
                     end
                 end
