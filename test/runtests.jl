@@ -1,6 +1,6 @@
 using Random, Rmath, Statistics, Test
 
-Random.srand(124)
+Random.seed!(124)
 
 function allEq(target::Vector{Float64}, current::Vector{Float64}, tolerance::Float64)
     @test length(target) == length(current)
@@ -179,8 +179,8 @@ allEq(Runif,      qunif.(log.(1 .- Punif), .2, 2, false, true))
 allEq(Rweibull,   qweibull.(log.(1 .- Pweibull), 3, 2, false, true))
 allEq(Rwilcox,      qwilcox.(log.(1 .- Pwilcox), 13, 17, false, true))
 
-## Test if srand working correctly
-srand(124)
+## Test if seed! working correctly
+Random.seed!(124)
 allEq(Rbeta, rbeta(n, .8, 2))
 allEq(Rbinom, rbinom(n, 55, pi/16))
 allEq(Rcauchy, rcauchy(n, 12, 2))
