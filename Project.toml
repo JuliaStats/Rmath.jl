@@ -1,6 +1,6 @@
 name = "Rmath"
 uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
-version = "0.5.1"
+version = "0.6.0"
 
 [deps]
 BinaryProvider = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
@@ -13,7 +13,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 BinaryProvider = "0.5"
-julia = "0.7, 1"
+julia = "1"
 
 [targets]
 test = ["Test"]
