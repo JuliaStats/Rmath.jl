@@ -2,20 +2,10 @@
 ## This module is for archival purposes.  The interface in the
 ## Distributions module is much more effective.
 
-__precompile__()
-
 module Rmath
 
+using Rmath_jll
 using Random
-
-# use dirname(@__FILE__) instead of Pkg.dir, since the latter will
-# cause the package to not work if installed in some other location
-depsjl = joinpath(@__DIR__, "..", "deps", "deps.jl")
-if isfile(depsjl)
-    include(depsjl)
-else
-    error("Rmath not properly installed. Please run Pkg.build(\"Rmath\") and restart julia")
-end
 
     export dbeta,pbeta,qbeta,rbeta     # Beta distribution (shape1, shape2)
     export dbinom,pbinom,qbinom,rbinom # Binomial distribution (size, prob)
