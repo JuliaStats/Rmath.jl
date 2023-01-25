@@ -1,13 +1,13 @@
 name = "Rmath"
 uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
-version = "0.7.0"
+version = "0.7.1"
 
 [deps]
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Rmath_jll = "f50d1b31-88e8-58de-be2c-1cc44531875f"
 
 [compat]
-Rmath_jll = "0.3"
+Rmath_jll = "0.3, 0.4"
 julia = "1.3"
 
 [extras]
