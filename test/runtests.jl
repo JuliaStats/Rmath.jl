@@ -137,6 +137,7 @@ allEq(Rwilcox,      qwilcox.(1 .- Pwilcox, 13, 17, false))
      
 const logPbinom = pbinom.(Rbinom, 55, pi/16, true, true)
 const logPnbinom = pnbinom.(Rnbinom, 7, .01, true, true)
+const logcPnbinom = pnbinom.(Rnbinom, 7, .01, false, true)
 
 ## Check q*(p* ( log ), log) = identity
 allEq(Rbeta,      qbeta.(log.(Pbeta), .8, 2, true, true))
@@ -172,7 +173,7 @@ allEq(Rgeom,      qgeom.(log.(1 .- Pgeom), pi/16, false, true))
 allEq(Rhyper,      qhyper.(log.(1 .- Phyper), 40, 30, 20, false, true))
 allEq(Rlnorm,      qlnorm.(log.(1 .- Plnorm), -1, 3, false, true))
 allEq(Rlogis,      qlogis.(log.(1 .- Plogis), 12, 2, false, true))
-allEq(Rnbinom,      qnbinom.(log.(1 .- Pnbinom), 7, .01, false, true))
+allEq(Rnbinom,      qnbinom.(logcPnbinom, 7, .01, false, true))
 allEq(Rnorm,      qnorm.(log.(1 .- Pnorm), -1, 3, false, true))
 allEq(Rpois,      qpois.(log.(1 .- Ppois), 12, false, true))
 allEq(Rsignrank,  qsignrank.(log.(1 .- Psignrank), 47, false, true))
