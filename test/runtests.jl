@@ -137,10 +137,10 @@ allEq(Rwilcox,      qwilcox.(1 .- Pwilcox, 13, 17, false))
      
 const logPbinom = pbinom.(Rbinom, 55, pi/16, true, true)
 const logPnbinom = pnbinom.(Rnbinom, 7, .01, true, true)
-const logRpois = ppois.(Rpois, 12, true, true)
+const logPpois = ppois.(Rpois, 12, true, true)
 const logcPbinom = pbinom.(Rbinom, 55, pi/16, false, true)
 const logcPnbinom = pnbinom.(Rnbinom, 7, .01, false, true)
-const logcRpois = ppois.(Rpois, 12, false, true)
+const logcPpois = ppois.(Rpois, 12, false, true)
 
 
 ## Check q*(p* ( log ), log) = identity
