@@ -134,10 +134,11 @@ allEq(Rt2,      qt.(1 .- Pt2, 1.01, false), 1e-2)
 allEq(Runif,      qunif.(1 .- Punif, .2, 2, false))
 allEq(Rweibull,   qweibull.(1 .- Pweibull, 3, 2, false))
 allEq(Rwilcox,      qwilcox.(1 .- Pwilcox, 13, 17, false))
-
+     
+logPbinom = pbinom.(Rbinom, 55, pi/16, true, true)
 ## Check q*(p* ( log ), log) = identity
 allEq(Rbeta,      qbeta.(log.(Pbeta), .8, 2, true, true))
-allEq(Rbinom,      qbinom.(log.(Pbinom), 55, pi/16, true, true))
+allEq(Rbinom,      qbinom.(logPbinom, 55, pi/16, true, true))
 allEq(Rcauchy,      qcauchy.(log.(Pcauchy), 12, 2, true, true))
 allEq(Rchisq,     qchisq.(log.(Pchisq), 3, true, true), 1e-14)
 allEq(Rexp,      qexp.(log.(Pexp), 2, true, true))
