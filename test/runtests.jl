@@ -1,3 +1,4 @@
+import Aqua
 using Random, Rmath, Statistics, Test
 
 Random.seed!(124)
@@ -134,7 +135,7 @@ allEq(Rt2,      qt.(1 .- Pt2, 1.01, false), 1e-2)
 allEq(Runif,      qunif.(1 .- Punif, .2, 2, false))
 allEq(Rweibull,   qweibull.(1 .- Pweibull, 3, 2, false))
 allEq(Rwilcox,      qwilcox.(1 .- Pwilcox, 13, 17, false))
-     
+
 const logPbinom = pbinom.(Rbinom, 55, pi/16, true, true)
 const logPnbinom = pnbinom.(Rnbinom, 7, .01, true, true)
 const logPpois = ppois.(Rpois, 12, true, true)
@@ -204,3 +205,8 @@ allEq(Rnbinom, rnbinom(n, 7, .01))
 allEq(Rnorm, rnorm(n, -1, 3))
 allEq(Rpois, rpois(n, 12))
 allEq(Rsignrank, rsignrank(n, 47))
+
+# Aqua tests
+@testset "Aqua.jl" begin
+    Aqua.test_all(Rmath)
+end
