@@ -1,4 +1,4 @@
-The Rmath module is licensed under the MIT License:
+The Rmath.jl Julia package is licensed under the MIT License:
 
 > Copyright (c) 2012-2013: Douglas Bates and other contributors.
 > 
@@ -21,8 +21,5 @@ The Rmath module is licensed under the MIT License:
 > OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 > WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-The package contains code from the project [dSFMT](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/)
-which has its own [license](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/LICENSE.txt).
-And the code is modifed by the [Julia Project](http://julialang.org) with
-their own [license](https://github.com/JuliaLang/julia/blob/master/LICENSE.md).
-
+Rmath.jl depends upon [`libRmath-julia`](https://github.com/JuliaLang/Rmath-julia/), derived
+from the R project, which itself is licensed under the [GPLv2](https://github.com/JuliaLang/Rmath-julia/blob/master/COPYING).
