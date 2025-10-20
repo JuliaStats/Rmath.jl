@@ -352,7 +352,7 @@ ptukey(q::Number, nmeans::Number, df::Number, nranges::Number=1.0,
         (Float64, Float64, Float64, Float64, Int32, Int32),
         q, nranges, nmeans, df, lower_tail, log_p)
 
-qtukey(q::Number, nmeans::Number, df::Number, nranges::Number=1.0,
+qtukey(p::Number, nmeans::Number, df::Number, nranges::Number=1.0,
        lower_tail::Bool=true, log_p::Bool=false) =
     ccall((:qtukey ,libRmath), Float64,
         (Float64, Float64, Float64, Float64, Int32, Int32),
