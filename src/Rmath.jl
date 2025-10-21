@@ -24,6 +24,7 @@ using Random
     export dnchisq,pnchisq,qnchisq,rnchisq # Noncentral Chi-squared distribution (df, ncp)
     export dnf,pnf,qnf,rnf             # Non-central F (df1, df2, ncp)
     export dnorm,pnorm,qnorm,rnorm     # Normal (Gaussian) distribution (mu, sigma)
+    export dnt,pnt,qnt                 # Non-central t distribution (df, ncp)
     export dpois,ppois,qpois,rpois     # Poisson distribution (lambda)
     export dsignrank,psignrank,qsignrank,rsignrank
     export dt,pt,qt,rt                 # Student's t distribution (df)
@@ -190,8 +191,10 @@ macro libRmath_2par_0d(base)
             ccall(($(string(pp)),libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), q, p1, p2, lower_tail, log_p)
         $qq(p::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
             ccall(($(string(qq)),libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
-        $rr(nn::Integer, p1::Number, p2::Number) =
-            [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
+        if $(rr !== :rnt)
+            $rr(nn::Integer, p1::Number, p2::Number) =
+                [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
+        end
         @libRmath_2par_0d_aliases $base
     end)
 end
@@ -202,6 +205,7 @@ end
 @libRmath_2par_0d nbinom      # Negative binomial distribution (size, prob)
 @libRmath_2par_0d nbinom_mu   # Negative binomial distribution (size, mu)
 @libRmath_2par_0d nchisq      # Noncentral Chi-squared distribution (df, ncp)
+@libRmath_2par_0d nt          # Noncentral t distribution (df, ncp)
 
 ## Need to handle the d-p-q for Wilcox separately because the Rmath functions allocate storage that must be freed.
 ## Wilcox - Wilcox's Rank Sum statistic (m, n) - probably only makes sense for positive integers
