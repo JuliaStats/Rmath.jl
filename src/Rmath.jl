@@ -94,8 +94,7 @@ end
             $qq(p::Number, p1::Number, lower_tail::Bool, log_p::Bool) =
                 ccall(($(string(qq)),libRmath), Float64,
                       (Float64,Float64,Int32,Int32), p, p1, lower_tail, log_p)
-            $rr(nn::Integer, p1::Number) =
-                [ccall(($(string(rr)),libRmath), Float64, (Float64,), p1) for i=1:nn]
+            $rr(p1::Number) = ccall(($(string(rr)),libRmath), Float64, (Float64,), p1)            
             @libRmath_1par_0d_aliases $(base)
         end)
     end
@@ -121,8 +120,7 @@ end
         ccall((:qsignrank,libRmath), Float64, (Float64,Float64,Int32,Int32), p, p1, lower_tail, log_p)
     end
     @libRmath_1par_0d_aliases signrank
-    rsignrank(nn::Integer, p1::Number) =
-        [ccall((:rsignrank,libRmath), Float64, (Float64,), p1) for i=1:nn]
+    rsignrank(p1::Number) = ccall((:rsignrank,libRmath), Float64, (Float64,), p1)
 
     ## Distributions with 1 parameter and a default
     macro libRmath_1par_1d(base, d1)
@@ -153,9 +151,7 @@ end
             $qq(p::Number, p1::Number) = $qq(p, p1, true, false)
             $qq(p::Number) = $qq(p, $d1, true, false)
 
-            $rr(nn::Integer, p1::Number) =
-                [ccall(($(string(rr)),libRmath), Float64, (Float64,), p1) for i=1:nn]
-            $rr(nn::Integer) = $rr(nn, $d1)
+            $rr(p1::Number=$d1) = ccall(($(string(rr)),libRmath), Float64, (Float64,), p1)
     end)
 end
 
@@ -192,8 +188,7 @@ macro libRmath_2par_0d(base)
         $qq(p::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Bool) =
             ccall(($(string(qq)),libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
         if $(rr !== :rnt)
-            $rr(nn::Integer, p1::Number, p2::Number) =
-                [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
+            $rr(p1::Number, p2::Number) = ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2)
         end
         @libRmath_2par_0d_aliases $base
     end)
@@ -222,8 +217,7 @@ function qwilcox(p::Number, p1::Number, p2::Number, lower_tail::Bool, log_p::Boo
     wilcox_deferred_free()
     ccall((:qwilcox,libRmath), Float64, (Float64,Float64,Float64,Int32,Int32), p, p1, p2, lower_tail, log_p)
 end
-rwilcox(nn::Integer, p1::Number, p2::Number) =
-    [ccall((:rwilcox,libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
+rwilcox(p1::Number, p2::Number) = ccall((:rwilcox,libRmath), Float64, (Float64,Float64), p1, p2)
 @libRmath_2par_0d_aliases wilcox
 
 ## Distributions with 2 parameters and 1 default
@@ -255,9 +249,8 @@ macro libRmath_2par_1d(base, d2)
         $qq(p::Number, p1::Number, p2::Number) = $qq(p, p1, p2, true, false)
         $qq(p::Number, p1::Number) = $qq(p, p1, $d2, true, false)
 
-        $rr(nn::Integer, p1::Number, p2::Number) =
-            [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
-        $rr(nn::Integer, p1::Number) = $rr(nn, p1, $d2)
+        $rr(p1::Number, p2::Number=$d2) =
+            ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2)
     end)
 end
 
@@ -306,10 +299,8 @@ macro libRmath_2par_2d(base, d1, d2)
         $qq(p::Number, p1::Number) = $qq(p, p1, $d2, true, false)
         $qq(p::Number) = $qq(p, $d1, $d2, true, false)
 
-        $rr(nn::Integer, p1::Number, p2::Number) =
-            [ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2) for i=1:nn]
-        $rr(nn::Integer, p1::Number) = $rr(nn, p1, $d2)
-        $rr(nn::Integer) = $rr(nn, $d1, $d2)
+        $rr(p1::Number=$d1, p2::Number=$d2) =
+            ccall(($(string(rr)),libRmath), Float64, (Float64,Float64), p1, p2)
     end)
 end
 
@@ -340,8 +331,8 @@ macro libRmath_3par_0d(base)
         $qq(p::Number, p1::Number, p2::Number, p3::Number, lower_tail::Bool) = $qq(p, p1, p2, p3, lower_tail, false)
         $qq(p::Number, p1::Number, p2::Number, p3::Number) = $qq(p, p1, p2, p3, true, false)
 
-        $rr(nn::Integer, p1::Number, p2::Number, p3::Number) =
-            [ccall(($(string(rr)), libRmath), Float64, (Float64, Float64, Float64), p1, p2, p3) for i = 1:nn]
+        $rr(p1::Number, p2::Number, p3::Number) =
+            ccall(($(string(rr)), libRmath), Float64, (Float64, Float64, Float64), p1, p2, p3)
     end)
 end
 

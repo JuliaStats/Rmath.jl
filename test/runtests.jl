@@ -49,32 +49,32 @@ gammaR(x::Float64) = ccall((:gammafn, Rmath.libRmath), Float64, (Float64,), x)
 
 const n = 26
 
-const Rbeta     = rbeta(n, .8, 2)
-const Rbinom    = rbinom(n, 55, pi/16)
-const Rcauchy   = rcauchy(n, 12, 2)
-const Rchisq    = rchisq(n, 3)
-const Rexp      = rexp(n, 2)
-const Rf        = rf(n, 12, 6)
-const Rgamma    = rgamma(n, 2, 5)
-const Rgeom     = rgeom(n, pi/16)
-const Rhyper    = rhyper(n, 40, 30, 20)
-const Rlnorm    = rlnorm(n, -1, 3)
-const Rlogis    = rlogis(n, 12, 2)
-const Rnbinom   = rnbinom(n, 7, .01)
-const Rnorm     = rnorm(n, -1, 3)
-const Rpois     = rpois(n, 12)
-const Rsignrank = rsignrank(n, 47)
-const Rt        = rt(n, 11)
+const Rbeta     = [rbeta(.8, 2) for _ in 1:n]
+const Rbinom    = [rbinom(55, pi/16) for _ in 1:n]
+const Rcauchy   = [rcauchy(12, 2) for _ in 1:n]
+const Rchisq    = [rchisq(3) for _ in 1:n]
+const Rexp      = [rexp(2) for _ in 1:n]
+const Rf        = [rf(12, 6) for _ in 1:n]
+const Rgamma    = [rgamma(2, 5) for _ in 1:n]
+const Rgeom     = [rgeom(pi/16) for _ in 1:n]
+const Rhyper    = [rhyper(40, 30, 20) for _ in 1:n]
+const Rlnorm    = [rlnorm(-1, 3) for _ in 1:n]
+const Rlogis    = [rlogis(12, 2) for _ in 1:n]
+const Rnbinom   = [rnbinom(7, .01) for _ in 1:n]
+const Rnorm     = [rnorm(-1, 3) for _ in 1:n]
+const Rpois     = [rpois(12) for _ in 1:n]
+const Rsignrank = [rsignrank(47) for _ in 1:n]
+const Rt        = [rt(11) for _ in 1:n]
 ## Rt2 below (to preserve the following random numbers!)
-const Runif     = runif(n, .2, 2)
-const Rweibull  = rweibull(n, 3, 2)
-const Rwilcox   = rwilcox(n, 13, 17)
-const Rt2       = rt(n, 1.01)
-const Rnt       = rnorm(n, 2.1, 1) ./ sqrt.(rchisq(n, 11) ./ 11)
-const Rnt2       = rnorm(n, -1.5, 1) ./ sqrt.(rchisq(n, 1.01) ./ 1.01)
-const Rtukey    = map(rchisq(n, 3)) do chisq
-    minz, maxz = extrema(rnorm(10, 0, 1))
-    return 3 * (maxz - minz) / sqrt(chisq)
+const Runif     = [runif(.2, 2) for _ in 1:n]
+const Rweibull  = [rweibull(3, 2) for _ in 1:n]
+const Rwilcox   = [rwilcox(13, 17) for _ in 1:n]
+const Rt2       = [rt(1.01) for _ in 1:n]
+const Rnt       = [rnorm(2.1, 1) / sqrt(rchisq(11) / 11) for _ in 1:n]
+const Rnt2      = [rnorm(-1.5, 1) / sqrt(rchisq(1.01) / 1.01) for _ in 1:n]
+const Rtukey    = map(1:n) do _
+    minz, maxz = extrema(rnorm(0, 1) for _ in 1:10)
+    return 3 * (maxz - minz) / sqrt(rchisq(3))
 end
 
 const Pbeta     = pbeta.(Rbeta, .8, 2)
@@ -211,21 +211,21 @@ allEq(Rwilcox,      qwilcox.(log.(1 .- Pwilcox), 13, 17, false, true))
 
 ## Test if seed! working correctly
 Random.seed!(124)
-allEq(Rbeta, rbeta(n, .8, 2))
-allEq(Rbinom, rbinom(n, 55, pi/16))
-allEq(Rcauchy, rcauchy(n, 12, 2))
-allEq(Rchisq, rchisq(n, 3))
-allEq(Rexp, rexp(n, 2))
-allEq(Rf, rf(n, 12, 6))
-allEq(Rgamma, rgamma(n, 2, 5))
-allEq(Rgeom, rgeom(n, pi/16))
-allEq(Rhyper, rhyper(n, 40, 30, 20))
-allEq(Rlnorm, rlnorm(n, -1, 3))
-allEq(Rlogis, rlogis(n, 12, 2))
-allEq(Rnbinom, rnbinom(n, 7, .01))
-allEq(Rnorm, rnorm(n, -1, 3))
-allEq(Rpois, rpois(n, 12))
-allEq(Rsignrank, rsignrank(n, 47))
+allEq(Rbeta, [rbeta(.8, 2) for _ in 1:n])
+allEq(Rbinom, [rbinom(55, pi/16) for _ in 1:n])
+allEq(Rcauchy, [rcauchy(12, 2) for _ in 1:n])
+allEq(Rchisq, [rchisq(3) for _ in 1:n])
+allEq(Rexp, [rexp(2) for _ in 1:n])
+allEq(Rf, [rf(12, 6) for _ in 1:n])
+allEq(Rgamma, [rgamma(2, 5) for _ in 1:n])
+allEq(Rgeom, [rgeom(pi/16) for _ in 1:n])
+allEq(Rhyper, [rhyper(40, 30, 20) for _ in 1:n])
+allEq(Rlnorm, [rlnorm(-1, 3) for _ in 1:n])
+allEq(Rlogis, [rlogis(12, 2) for _ in 1:n])
+allEq(Rnbinom, [rnbinom(7, .01) for _ in 1:n])
+allEq(Rnorm, [rnorm(-1, 3) for _ in 1:n])
+allEq(Rpois, [rpois(12) for _ in 1:n])
+allEq(Rsignrank, [rsignrank(47) for _ in 1:n])
 
 # Aqua tests
 @testset "Aqua.jl" begin
