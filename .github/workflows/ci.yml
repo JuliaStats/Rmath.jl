@@ -26,11 +26,14 @@ jobs:
           - x86
         include:
           - os: macOS-latest
-            arch: aarch64
+            arch: default
             version: '1'
           - os: macOS-15-intel
-            arch: x86_64
-            version: '1'          
+            arch: default
+            version: '1'
+          - os: ubuntu-24.04-arm
+            arch: default
+            version: '1'            
     steps:
       - uses: actions/checkout@v7
       - uses: julia-actions/setup-julia@v3
